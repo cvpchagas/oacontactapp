@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './App.css';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -14,49 +14,79 @@ import SaveIcon from "@material-ui/icons/Save";
 import CloseIcon from "@material-ui/icons/Close";
 import AddIcon from '@material-ui/icons/AccountCircle';
 
+
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 
-// import logoregister from './assets/contact.png';
+function formatfield(mask, value) {
+	if (!value) return '';
+
+	var boolmask;
+
+	var exp = /\-|\.|\/|\(|\)| /g;
+	var onlynumbers = value.replace(exp, '');
+
+	var fieldposition = 0;
+	var newvaluefield = '';
+	var masklengh = onlynumbers.length;
+
+	for (var i = 0; i <= masklengh; i++) {
+		boolmask =
+			mask.charAt(i) === '-' ||
+			mask.charAt(i) === '.' ||
+			mask.charAt(i) === '/';
+		boolmask =
+			boolmask ||
+			mask.charAt(i) === '(' ||
+			mask.charAt(i) === ')' ||
+			mask.charAt(i) === ' ';
+		if (boolmask) {
+			newvaluefield += mask.charAt(i);
+			masklengh++;
+		} else {
+			newvaluefield += onlynumbers.charAt(fieldposition);
+			fieldposition++;
+		}
+	}
+	return newvaluefield;
+}
 
 function App() {
-
   const baseurl = "https://localhost:5002/api/v1/Contact";
   const [data, setData] = useState([]);
   const [updateData, setUpdateData]=useState(true);
+  const [modalAdd, setModalAdd] = useState(false);
+  const [modalEdit, setModalEdit] = useState(false);
+  const [modalRemove, setModalRemove] = useState(false);
 
-  const [modalAdd, setModalAdd]=useState(false);
-  const [modalEdit, setModalEdit]=useState(false);
-  const [modalRemove, setModalRemove]=useState(false);
-
-  const [selectedcontact,setSelectedContact]=useState(
+  const [selectedcontact, setSelectedContact] = useState(
     {
       id: '',
-      name: '',        
-      cpf: '',  
-      birthday: '',  
-      gender: '',  
-      addressZipCode: '',  
-      addressCountry: '',  
-      addressState: '',  
-      addressCity: '',  
-      addressDescription: '',  
-      addressComplement: '' 
+      name: '',
+      cpf: '',
+      birthday: '',
+      gender: '',
+      addressZipCode: '',
+      addressCountry: '',
+      addressState: '',
+      addressCity: '',
+      addressDescription: '',
+      addressComplement: ''
     })
 
-    const handleChange=e=>{
-      const {name, value}=e.target;
-      setSelectedContact({
-        ...selectedcontact,
-        [name]: value
-      });
-      console.log(selectedcontact);
-    }
+  const handleChange = e => {
+    const { name, value } = e.target;
+    setSelectedContact({
+      ...selectedcontact,
+      [name]: value
+    });
+    console.log(selectedcontact);
+  }
 
-const selectContact=(contact, action)=>{
-  setSelectedContact(contact);
-  (action==="remove") ? OpenColseModalRemove():OpenColseModalEdit(); 
-}
-//#region API Get Control (Get All Contacts)
+  const selectContact = (contact, action) => {
+    setSelectedContact(contact);
+    (action === "remove") ? OpenColseModalRemove() : OpenColseModalEdit();
+  }
+  //#region API Get Control (Get All Contacts)
   const contactget = async () => {
     await axios.get(baseurl)
       .then(response => {
@@ -66,30 +96,30 @@ const selectContact=(contact, action)=>{
       })
   }
   useEffect(() => {
-    if(updateData){
+    if (updateData) {
       contactget();
       setUpdateData(false);
     }
-  },[updateData])
+  }, [updateData])
 
-//#endregion
+  //#endregion
 
-//#region API POST Control (Add Contact)
-const contactpost = async () => {
-  delete selectedcontact.id;
-  await axios.post(baseurl,selectedcontact)
-    .then(response => {
-      setData(data.concat(response.data));
-      setUpdateData(true);
-      OpenColseModalAdd();
-    }).catch(error => {
-      console.log(error);
-    })
-}
+  //#region API POST Control (Add Contact)
+  const contactpost = async () => {
+    delete selectedcontact.id;
+    await axios.post(baseurl, selectedcontact)
+      .then(response => {
+        setData(data.concat(response.data));
+        setUpdateData(true);
+        OpenColseModalAdd();
+      }).catch(error => {
+        console.log(error);
+      })
+  }
 
-//#endregion
+  //#endregion
 
-//#region API PUT Control (Add Contact)
+  //#region API PUT Control (Add Contact)
   const contactput = async () => {
     await axios.put(baseurl + "/" + selectedcontact.id, selectedcontact)
       .then(response => {
@@ -113,51 +143,59 @@ const contactpost = async () => {
       }).catch(error => {
         console.log(error);
       })
-}
+  }
 
-//#endregion
+  //#endregion
 
-//#region API DELETE Control (Remove Contact by Id)
-const contactdelete = async () => {
-  await axios.delete(baseurl+"/"+ selectedcontact.id)
-    .then(response => {
-      setData(data.filter(contact=> contact.id !== response.data));
-      setUpdateData(true);
-      OpenColseModalRemove();
-    }).catch(error => {
-      console.log(error);
-    })
-}
+  //#region API DELETE Control (Remove Contact by Id)
+  const contactdelete = async () => {
+    await axios.delete(baseurl + "/" + selectedcontact.id)
+      .then(response => {
+        setData(data.filter(contact => contact.id !== response.data));
+        setUpdateData(true);
+        OpenColseModalRemove();
+      }).catch(error => {
+        console.log(error);
+      })
+  }
 
-//#endregion
+  //#endregion
 
-//#region Modal Add Control
-const OpenColseModalAdd=()=>{
-  setModalAdd(!modalAdd);
-}
-//#endregion
+  //#region Modal Add Control
+  const OpenColseModalAdd = () => {
+    setModalAdd(!modalAdd);
+  }
+  //#endregion
 
-//#region Modal Edit Control
-const OpenColseModalEdit=()=>{
-  setModalEdit(!modalEdit);
-}
-//#endregion
+  //#region Modal Edit Control
+  const OpenColseModalEdit = () => {
+    setModalEdit(!modalEdit);
+  }
+  //#endregion
 
-//#region Modal Remove Control
-const OpenColseModalRemove=()=>{
-  setModalRemove(!modalRemove);
-}
-//#endregion
- 
+  //#region Modal Remove Control
+  const OpenColseModalRemove = () => {
+    setModalRemove(!modalRemove);
+  }
+  //#endregion
 
-return (
+  // const datefield = document.getElementById('birthdayDate') // Seletor do campo de telefone
+  // datefield.addEventListener('keypress', (e) => maskDate(e.target.value)) // Dispara quando digitado no campo
+  // datefield.addEventListener('change', (e) => maskDate(e.target.value)) // Dispara quando autocompletado o campo
+  // const maskDate = (value) => {
+  //   value = value.replace(/\D/g, '');
+  //   if (value.length > 8) value = value.substr(0, 8);
+  //   birthday.value = formatfield('00/00/0000', value);
+  // }
+  return (
+    
     <div className="contact-container">
       <br />
       <h3>Open assessment - Contacts</h3>
       <br />
       <header>
         {/* <img scr={logoregister} alt='Register' /> */}
-        <button className="btn btn-success" onClick={()=>OpenColseModalAdd()}>Add contact</button>
+        <button className="btn btn-success" onClick={() => OpenColseModalAdd()}>Add contact</button>
       </header>
       <table className="table table-bordered">
         <thead>
@@ -192,15 +230,15 @@ return (
               <td>
                 {/* <button className="btn btn-primary"  onClick={()=>selectContact(contact,"edit")}>Edit</button> */}
 
-                <IconButton aria-label="edit"  className="action-button-primary"
-							           onClick={()=>selectContact(contact,"edit")}>
-								<Editicon/>
-							</IconButton>
-                 {/* {"  "} */}
-                 <IconButton aria-label="remove"  className="action-button-primary"
-							           onClick={()=>selectContact(contact,"remove")}>
-								<RemoveIcon/>
-							</IconButton>
+                <IconButton aria-label="edit" className="action-button-primary"
+                  onClick={() => selectContact(contact, "edit")}>
+                  <Editicon />
+                </IconButton>
+                {/* {"  "} */}
+                <IconButton aria-label="remove" className="action-button-primary"
+                  onClick={() => selectContact(contact, "remove")}>
+                  <RemoveIcon />
+                </IconButton>
                 {/* <button className="btn btn-danger" onClick={()=>selectContact(contact,"remove")}>Remove</button> */}
               </td>
             </tr>
@@ -213,41 +251,39 @@ return (
         <ModalHeader>Contact Informations</ModalHeader>
         <ModalBody>
           <div class="form-group">
-            <input type="hidden" name="id" onChange={handleChange}/>
+            <input type="hidden" name="id" onChange={handleChange} />
             <span class="text-danger">*</span><label>Name:</label>
-            <input class="form-control form-contol-lg" placeholder="Contact Name" name="name" max="200" onChange={handleChange}/>
+            <input class="form-control form-contol-lg" placeholder="Contact Name" name="name" maxlength="200" required onChange={handleChange} />
             <label>CPF:</label>
-            <input class="form-control form-contol-lg" placeholder="000.000.000-00" mask="000.000.000-00" max="14" name="cpf" onChange={handleChange} />
+            <input class="form-control form-contol-lg" placeholder="000.000.000-00" mask="000.000.000-00" maxlength="14" name="cpf" onChange={handleChange} />
             <label>Birthday:</label>
-            <input class="form-control form-contol-lg" placeholder="" mask="YYYY-MM-DD" max="10" name="birthday" onChange={handleChange}/>
+            <input type="text" class="form-control form-contol-lg" placeholder="01/01/2021" id="birthday" name="birthday" maxlength="15" pattern="\(\d{2}\)\s*\d{5}-\d{4}" onChange={handleChange}/>
             <label>Gender:</label>
-            <input class="form-control form-contol-lg" placeholder="" max="200" name="gender" onChange={handleChange} />
+            <input class="form-control form-contol-lg" placeholder="" maxlength="200" name="gender" onChange={handleChange} />
             <label>Zip Code:</label>
-            <input class="form-control form-contol-lg" placeholder="Contact Zip Code" max="200" name="addressZipCode" onChange={handleChange}/>
+            <input class="form-control form-contol-lg" placeholder="Contact Zip Code" maxlength="200" name="addressZipCode" onChange={handleChange} />
             <label>Country:</label>
-            <input class="form-control form-contol-lg" placeholder="Contact Country" max="200" name="addressCountry" onChange={handleChange}/>
+            <input class="form-control form-contol-lg" placeholder="Contact Country" maxlength="200" name="addressCountry" onChange={handleChange} />
             <label>State:</label>
-            <input class="form-control form-contol-lg" placeholder="Contact State" max="2" name="addressState" onChange={handleChange}/>
+            <input class="form-control form-contol-lg" placeholder="Contact State" maxlength="2" name="addressState" onChange={handleChange} />
             <label>City:</label>
-            <input class="form-control form-contol-lg" placeholder="Contact City" max="200" name="addressCity" onChange={handleChange}/>
+            <input class="form-control form-contol-lg" placeholder="Contact City" maxlength="200" name="addressCity" onChange={handleChange} />
             <label>Address:</label>
-            <input class="form-control form-contol-lg" placeholder="Contact Address Line 1" max="500"  name="addressDescription" onChange={handleChange}/>
+            <input class="form-control form-contol-lg" placeholder="Contact Address Line 1" maxlength="500" name="addressDescription" onChange={handleChange} />
             <label>Address Complement:</label>
-            <input class="form-control form-contol-lg" placeholder="Contact Address Line 2" max="1000" name="addressComplement" onChange={handleChange}/>
+            <input class="form-control form-contol-lg" placeholder="Contact Address Line 2" maxlength="1000" name="addressComplement" onChange={handleChange} />
           </div>
         </ModalBody>
         <ModalFooter>
-            {/* <button className="btn btn-primary" onClick={()=>contactpost()}>Save</button> */}
-            <IconButton aria-label="save"  className="action-button-primary"
-							           onClick={()=>contactpost()}>
-								<SaveIcon/>
-							</IconButton>
-            {"   "}
-            {/* <button className="btn btn-danger" onClick={()=>OpenColseModalAdd()}>cancel</button> */}
-            <IconButton aria-label="cancel"  className="action-button-primary"
-							           onClick={()=>OpenColseModalAdd()}>
-								<CloseIcon/>
-							</IconButton>
+          <IconButton aria-label="save" className="action-button-primary"
+            onClick={() => contactpost()}>
+            <SaveIcon />
+          </IconButton>
+          {"   "}
+          <IconButton aria-label="cancel" className="action-button-primary"
+            onClick={() => OpenColseModalAdd()}>
+            <CloseIcon />
+          </IconButton>
         </ModalFooter>
       </Modal>
 
@@ -257,40 +293,40 @@ return (
           <div class="form-group">
             <h4>Contact Id: {selectedcontact && selectedcontact.id}</h4>
             <span class="text-danger">*</span><label>Name:</label>
-            <input class="form-control form-contol-lg" placeholder="Contact Name" name="name" max="200" onChange={handleChange} value={selectedcontact && selectedcontact.name}/>
+            <input class="form-control form-contol-lg" placeholder="Contact Name" name="name" maxlength="200" onChange={handleChange} value={selectedcontact && selectedcontact.name} />
             <label>CPF:</label>
-            <input class="form-control form-contol-lg" placeholder="000.000.000-00" mask="000.000.000-00" max="14" name="cpf" onChange={handleChange} value={selectedcontact && selectedcontact.cpf}/>
+            <input class="form-control form-contol-lg" placeholder="000.000.000-00" mask="000.000.000-00" maxlength="14" name="cpf" onChange={handleChange} value={selectedcontact && selectedcontact.cpf} />
             <label>Birthday:</label>
-            <input class="form-control form-contol-lg" placeholder="" mask="YYYY-MM-DD" max="10" name="birthday" onChange={handleChange} value={selectedcontact && selectedcontact.birthday}/>
+            <input type="text" class="form-control form-contol-lg" placeholder="01/01/2021" id="birthday" name="birthday" maxlength="15" pattern="\(\d{2}\)\s*\d{5}-\d{4}" onChange={handleChange} value={selectedcontact && selectedcontact.birthday} />
             <label>Gender:</label>
-            <input class="form-control form-contol-lg" placeholder="" max="200" name="gender" onChange={handleChange} value={selectedcontact && selectedcontact.gender} />
+            <input class="form-control form-contol-lg" placeholder="" maxlength="200" name="gender" onChange={handleChange} value={selectedcontact && selectedcontact.gender} />
             <label>Zip Code:</label>
-            <input class="form-control form-contol-lg" placeholder="Contact Zip Code" max="200" name="addressZipCode" onChange={handleChange} value={selectedcontact && selectedcontact.addressZipCode}/>
+            <input class="form-control form-contol-lg" placeholder="Contact Zip Code" maxlength="200" name="addressZipCode" onChange={handleChange} value={selectedcontact && selectedcontact.addressZipCode} />
             <label>Country:</label>
-            <input class="form-control form-contol-lg" placeholder="Contact Country" max="200" name="addressCountry" onChange={handleChange} value={selectedcontact && selectedcontact.addressCountry}/>
+            <input class="form-control form-contol-lg" placeholder="Contact Country" maxlength="200" name="addressCountry" onChange={handleChange} value={selectedcontact && selectedcontact.addressCountry} />
             <label>State:</label>
-            <input class="form-control form-contol-lg" placeholder="Contact State" max="2" name="addressState" onChange={handleChange} value={selectedcontact && selectedcontact.addressState}/>
+            <input class="form-control form-contol-lg" placeholder="Contact State" maxlength="2" name="addressState" onChange={handleChange} value={selectedcontact && selectedcontact.addressState} />
             <label>City:</label>
-            <input class="form-control form-contol-lg" placeholder="Contact City" max="200" name="addressCity" onChange={handleChange} value={selectedcontact && selectedcontact.addressCity}/>
+            <input class="form-control form-contol-lg" placeholder="Contact City" maxlength="200" name="addressCity" onChange={handleChange} value={selectedcontact && selectedcontact.addressCity} />
             <label>Address:</label>
-            <input class="form-control form-contol-lg" placeholder="Contact Address Line 1" max="500"  name="addressDescription" onChange={handleChange} value={selectedcontact && selectedcontact.addressDescription}/>
+            <input class="form-control form-contol-lg" placeholder="Contact Address Line 1" maxlength="500" name="addressDescription" onChange={handleChange} value={selectedcontact && selectedcontact.addressDescription} />
             <label>Address Complement:</label>
-            <input class="form-control form-contol-lg" placeholder="Contact Address Line 2" max="1000" name="addressComplement" onChange={handleChange} value={selectedcontact && selectedcontact.addressComplement}/>
+            <input class="form-control form-contol-lg" placeholder="Contact Address Line 2" maxlength="1000" name="addressComplement" onChange={handleChange} value={selectedcontact && selectedcontact.addressComplement} />
           </div>
         </ModalBody>
         <ModalFooter>
-            {/* <button className="btn btn-primary" onClick={()=>contactput()}>Save</button>{"   "}
+          {/* <button className="btn btn-primary" onClick={()=>contactput()}>Save</button>{"   "}
             <button className="btn btn-danger" onClick={()=>OpenColseModalEdit()}>cancel</button> */}
 
-            <IconButton aria-label="save"  className="action-button-primary"
-							           onClick={()=>contactput()}>
-								<SaveIcon/>
-							</IconButton>
-            {"   "}
-            <IconButton aria-label="cancel"  className="action-button-primary"
-							           onClick={()=>OpenColseModalEdit()}>
-								<CloseIcon/>
-							</IconButton>
+          <IconButton aria-label="save" className="action-button-primary"
+            onClick={() => contactput()}>
+            <SaveIcon />
+          </IconButton>
+          {"   "}
+          <IconButton aria-label="cancel" className="action-button-primary"
+            onClick={() => OpenColseModalEdit()}>
+            <CloseIcon />
+          </IconButton>
         </ModalFooter>
       </Modal>
 
@@ -299,8 +335,8 @@ return (
           The contact {selectedcontact && selectedcontact.name} will be removed. Do you confirm?
         </ModalBody>
         <ModalFooter>
-        <button className="btn btn-danger" onClick={()=>contactdelete()}>Yes</button>
-            <button className="btn btn-secundary" onClick={()=>OpenColseModalRemove()}>No</button>
+          <button className="btn btn-danger" onClick={() => contactdelete()}>Yes</button>
+          <button className="btn btn-secundary" onClick={() => OpenColseModalRemove()}>No</button>
         </ModalFooter>
       </Modal>
 
