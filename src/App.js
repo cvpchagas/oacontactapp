@@ -187,14 +187,6 @@ function App() {
   }
   //#endregion
 
-  // const datefield = document.getElementById('birthdayDate') // Seletor do campo de telefone
-  // datefield.addEventListener('keypress', (e) => maskDate(e.target.value)) // Dispara quando digitado no campo
-  // datefield.addEventListener('change', (e) => maskDate(e.target.value)) // Dispara quando autocompletado o campo
-  // const maskDate = (value) => {
-  //   value = value.replace(/\D/g, '');
-  //   if (value.length > 8) value = value.substr(0, 8);
-  //   birthday.value = formatfield('00/00/0000', value);
-  // }
   return (
     
     <div className="contact-container">
@@ -266,9 +258,9 @@ function App() {
             <label>CPF:</label>
             <input class="form-control form-contol-lg" placeholder="000.000.000-00" mask="000.000.000-00" maxlength="14" name="cpf" onChange={handleChange} />
             <label>Birthday:</label>
-            <input type="text" class="form-control form-contol-lg" placeholder="01/01/2021" id="birthday" name="birthday" maxlength="15" pattern="\(\d{2}\)\s*\d{5}-\d{4}" onChange={handleChange}/>
+            <input type="text" class="form-control form-contol-lg" placeholder="" id="01/01/2000" name="birthday" maxlength="15" pattern="\(\d{2}\)\s*\d{5}-\d{4}" onChange={handleChange}/>
             <label>Gender:</label>
-            <input class="form-control form-contol-lg" placeholder="" maxlength="200" name="gender" onChange={handleChange} />
+            <input class="form-control form-contol-lg" placeholder="Contact gender" maxlength="200" name="gender" onChange={handleChange} />
             <label>Zip Code:</label>
             <input class="form-control form-contol-lg" placeholder="Contact Zip Code" maxlength="200" name="addressZipCode" onChange={handleChange} />
             <label>Country:</label>
@@ -306,7 +298,7 @@ function App() {
             <label>CPF:</label>
             <input class="form-control form-contol-lg" placeholder="000.000.000-00" mask="000.000.000-00" maxlength="14" name="cpf" onChange={handleChange} value={selectedcontact && selectedcontact.cpf} />
             <label>Birthday:</label>
-            <input type="text" class="form-control form-contol-lg" placeholder="01/01/2021" id="birthday" name="birthday" maxlength="15" pattern="\(\d{2}\)\s*\d{5}-\d{4}" onChange={handleChange} value={selectedcontact && selectedcontact.birthday} />
+            <input type="text" class="form-control form-contol-lg" placeholder="01/01/2000" id="birthday" name="birthday" maxlength="15" pattern="\(\d{2}\)\s*\d{5}-\d{4}" onChange={handleChange} value={selectedcontact && selectedcontact.birthday} />
             <label>Gender:</label>
             <input class="form-control form-contol-lg" placeholder="" maxlength="200" name="gender" onChange={handleChange} value={selectedcontact && selectedcontact.gender} />
             <label>Zip Code:</label>
