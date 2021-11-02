@@ -1,4 +1,44 @@
-.App {
+.contact-container{
+  width: 100%;
+  max-width: 1200px;
+  padding: 5 10px;
+  margin: 30px auto;
+  /* background: #727272; */
+}
+
+.action-button-primary{
+  color: #510bac;
+}
+.contact-container header{
+  display: flex;
+  align-items: center;
+}
+.contact-container header img{
+  height: 50px;
+}
+.contact-container header button{
+  height: 50px;
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid #DCDCE6;
+  background: orange;
+  margin-left: 16px;
+  transition: border-color 0.5s;
+}
+.contact-container header button:hover{
+  border-color: #510bac;
+}
+
+table, th, td {
+  border: 1px solid #DCDCE6;
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  text-align: center;
+  text-align-last: center;
+}
+
+/* .App {
   text-align: center;
 }
 
@@ -35,4 +75,4 @@
   to {
     transform: rotate(360deg);
   }
-}
+} */
