@@ -20,7 +20,7 @@ import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 
 function App() {
 
-  const baseurl = "https://localhost:44378/api/v1/Contact";
+  const baseurl = "https://localhost:5002/api/v1/Contact";
   const [data, setData] = useState([]);
   const [updateData, setUpdateData]=useState(true);
 
