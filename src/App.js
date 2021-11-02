@@ -92,6 +92,8 @@ function App() {
       .then(response => {
         setData(response.data);
       }).catch(error => {
+        alert("A failure occurred while trying to get the contact list . Please, check the following message:\n\n"+ 
+        error.message);
         console.log(error);
       })
   }
@@ -113,6 +115,8 @@ function App() {
         setUpdateData(true);
         OpenColseModalAdd();
       }).catch(error => {
+        alert("A failure occurred while trying to create the contact. Please, check the following message:\n\n"+ 
+        error.message);
         console.log(error);
       })
   }
@@ -141,6 +145,8 @@ function App() {
         });
         OpenColseModalEdit();
       }).catch(error => {
+        alert("A failure occurred while trying to update the contact (id:"+ selectedcontact.id +" ). Please, check the following message:\n\n"+ 
+        error.message);
         console.log(error);
       })
   }
@@ -155,6 +161,8 @@ function App() {
         setUpdateData(true);
         OpenColseModalRemove();
       }).catch(error => {
+        alert("A failure occurred while trying to remove the contact (id:"+ selectedcontact.id +" ). Please, check the following message:\n\n"+ 
+        error.message);
         console.log(error);
       })
   }
@@ -197,6 +205,7 @@ function App() {
         {/* <img scr={logoregister} alt='Register' /> */}
         <button className="btn btn-success" onClick={() => OpenColseModalAdd()}>Add contact</button>
       </header>
+
       <table className="table table-bordered">
         <thead>
           <tr>
@@ -315,9 +324,6 @@ function App() {
           </div>
         </ModalBody>
         <ModalFooter>
-          {/* <button className="btn btn-primary" onClick={()=>contactput()}>Save</button>{"   "}
-            <button className="btn btn-danger" onClick={()=>OpenColseModalEdit()}>cancel</button> */}
-
           <IconButton aria-label="save" className="action-button-primary"
             onClick={() => contactput()}>
             <SaveIcon />
